@@ -1,0 +1,15 @@
+{
+  "name": "melstream-auto",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MelStream Auto MerlMovie streaming plugin",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "merlmovie-sdk": "^16.4.7",
+    "express": "^5.1.0",
+    "ws": "^8.18.0"
+  }
+}
