@@ -1,8 +1,0 @@
-{
-  "name": "MelStream Auto",
-  "image": "https://primemarketplaceng-blip.github.io/merlstream/logo.png",
-  "embed_url": "https://YOUR-BACKEND-HOST/movie/{i}",
-  "tv_embed_url": "https://YOUR-BACKEND-HOST/tv/{i}/{s}/{e}",
-  "stream_type": "api",
-  "logo_background_color": "#090909"
-}
