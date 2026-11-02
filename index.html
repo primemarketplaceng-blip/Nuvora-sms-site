@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MelStream Auto</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 25px;
+  background: #090d16;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+.container {
+  max-width: 750px;
+  margin: 40px auto;
+  text-align: center;
+}
+h1 {
+  color: #55aaff;
+  font-size: 34px;
+}
+.card {
+  background: #151d2b;
+  border: 1px solid #26364d;
+  border-radius: 14px;
+  padding: 25px;
+  margin-top: 25px;
+}
+.label {
+  color: #8da4c2;
+  font-size: 13px;
+  text-transform: uppercase;
+  margin-top: 18px;
+}
+.value {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+#status {
+  color: #55d69e;
+  margin-top: 20px;
+}
+.player {
+  background: #090d16;
+  border-radius: 10px;
+  padding: 35px 15px;
+  margin-top: 25px;
+  color: #aaa;
+}
+.footer {
+  color: #66758a;
+  font-size: 12px;
+  margin-top: 30px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>MelStream Auto</h1>
+<p>Unified Streaming Interface</p>
+<div class="card">
+<div class="label">Connection status</div>
+<div class="value" id="connection">Checking...</div>
+<div class="label">Content type</div>
+<div class="value" id="type">Not received</div>
+<div class="label">Movie / TV ID</div>
+<div class="value" id="id">Not received</div>
+<div class="label">Season</div>
+<div class="value" id="season">Not applicable</div>
+<div class="label">Episode</div>
+<div class="value" id="episode">Not applicable</div>
+<div id="status"></div>
+<div class="player">
+Streaming player will appear here when a supported, authorized source is connected.
+</div>
+</div>
+<div class="footer">
+MelStream Auto · Version 2.0
+</div>
+</div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const type = params.get("type");
+const id = params.get("id");
+const season = params.get("season");
+const episode = params.get("episode");
+document.getElementById("connection").textContent =
+  id ? "Parameters received" : "Waiting for parameters";
+document.getElementById("type").textContent =
+  type || "Not received";
+document.getElementById("id").textContent =
+  id || "Not received";
+document.getElementById("season").textContent =
+  season || "Not applicable";
+document.getElementById("episode").textContent =
+  episode || "Not applicable";
+document.getElementById("status").textContent =
+  id
+  ? "Connection test successful."
+  : "Open with a movie or TV ID to test the connection.";
+</script>
+</body>
+</html>
