@@ -3,81 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>MelStream Auto</title>
+<title>MelStream</title>
 
 <style>
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    background: #090b12;
-    color: white;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  background: #090d16;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 25px;
 }
 
 .container {
-    max-width: 600px;
-    margin: auto;
-    padding: 35px 20px;
-    text-align: center;
+  max-width: 850px;
+  margin: auto;
 }
 
-.logo {
-    font-size: 32px;
-    font-weight: bold;
-    color: #55d6ff;
-    margin-top: 50px;
+h1 {
+  color: #55aaff;
+  font-size: 32px;
 }
 
-.subtitle {
-    color: #a8adbb;
-    margin-bottom: 35px;
+#status {
+  color: #aaa;
+  margin: 20px 0;
 }
 
-.status {
-    background: #171b27;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 25px;
+.player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #151d2b;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+  overflow: hidden;
 }
 
-.provider {
-    background: #171b27;
-    border: 1px solid #292f40;
-    border-radius: 12px;
-    padding: 20px;
-    margin: 15px 0;
-    text-align: left;
-}
-
-.provider h3 {
-    margin: 0 0 8px;
-    color: #55d6ff;
-}
-
-.provider p {
-    color: #a8adbb;
-    font-size: 13px;
+iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 button {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    background: #55d6ff;
-    color: #090b12;
-    font-weight: bold;
-    font-size: 15px;
+  background: #1685ff;
+  border: none;
+  color: white;
+  padding: 13px 20px;
+  border-radius: 8px;
+  margin: 8px;
+  font-size: 15px;
 }
 
-.footer {
-    margin-top: 40px;
-    color: #777;
-    font-size: 12px;
+.note {
+  color: #888;
+  font-size: 12px;
+  margin-top: 25px;
 }
 </style>
 </head>
@@ -86,59 +74,37 @@ button {
 
 <div class="container">
 
-    <div class="logo">MELSTREAM</div>
+<h1>MelStream Auto</h1>
 
-    <p class="subtitle">
-        Unified Streaming Integration
-    </p>
+<p id="status">Preparing your stream...</p>
 
-    <div class="status">
-        <strong>MelStream Auto</strong>
-        <p>Three streaming providers available</p>
-    </div>
+<div class="player" id="player">
+  <p>Waiting for an authorized streaming source.</p>
+</div>
 
-    <div class="provider">
-        <h3>VidSrc</h3>
-        <p>Primary streaming provider</p>
-        <button onclick="openProvider('vidsrc')">
-            Open VidSrc
-        </button>
-    </div>
-
-    <div class="provider">
-        <h3>SmashyStream</h3>
-        <p>Secondary streaming provider</p>
-        <button onclick="openProvider('smashy')">
-            Open SmashyStream
-        </button>
-    </div>
-
-    <div class="provider">
-        <h3>VidFast</h3>
-        <p>Third streaming provider</p>
-        <button onclick="openProvider('vidfast')">
-            Open VidFast
-        </button>
-    </div>
-
-    <div class="footer">
-        MELSTREAM AUTO © 2026
-    </div>
+<p class="note">
+MelStream Auto · Unified Streaming Interface
+</p>
 
 </div>
 
 <script>
-function openProvider(provider) {
+const params = new URLSearchParams(window.location.search);
 
-    const sources = {
-        vidsrc: "https://vidsrc.sh/",
-        smashy: "https://smashystream.xyz/",
-        vidfast: "https://vidfast.vc/"
-    };
+const type = params.get("type") || "movie";
+const id = params.get("id");
+const season = params.get("season");
+const episode = params.get("episode");
 
-    if (sources[provider]) {
-        window.location.href = sources[provider];
-    }
+const status = document.getElementById("status");
+
+if (!id) {
+  status.textContent = "No movie or TV ID received.";
+} else {
+  status.textContent =
+    `Ready: ${type.toUpperCase()} · ID: ${id}` +
+    (season ? ` · Season ${season}` : "") +
+    (episode ? ` · Episode ${episode}` : "");
 }
 </script>
 
