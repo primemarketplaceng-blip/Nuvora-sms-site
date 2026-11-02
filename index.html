@@ -1,213 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>MelStream Auto</title>
-
-<style>
-:root {
-  --background: #08090d;
-  --panel: #12141c;
-  --accent: #8b5cf6;
-  --text: #ffffff;
-  --muted: #a1a1aa;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: var(--background);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 17px 20px;
-  background: #10111a;
-  border-bottom: 1px solid #252536;
-}
-
-.logo {
-  font-size: 21px;
-  font-weight: bold;
-  color: var(--accent);
-}
-
-.version {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-main {
-  max-width: 1100px;
-  margin: auto;
-  padding: 18px;
-}
-
-.info {
-  background: var(--panel);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 18px;
-}
-
-.info h2 {
-  margin: 0 0 8px;
-  font-size: 19px;
-}
-
-.info p {
-  margin: 5px 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.player-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-#message {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 25px;
-  color: var(--muted);
-  background: #08090d;
-}
-
-.sources {
-  margin-top: 22px;
-  background: var(--panel);
-  padding: 17px;
-  border-radius: 12px;
-}
-
-.sources h3 {
-  margin-top: 0;
-}
-
-.source-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.source {
-  padding: 13px 8px;
-  text-align: center;
-  background: #202230;
-  border: 1px solid #34364a;
-  border-radius: 8px;
-  color: white;
-  font-size: 13px;
-}
-
-.source.disabled {
-  opacity: .45;
-  cursor: not-allowed;
-}
-
-footer {
-  padding: 25px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-@media(max-width: 500px) {
-  .source-list {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="logo">MELSTREAM AUTO</div>
-  <div class="version">VERSION 2.0</div>
-</header>
-
-<main>
-
-  <section class="info">
-    <h2 id="title">MelStream Auto</h2>
-    <p id="media-type">Preparing playback...</p>
-    <p id="media-id"></p>
-  </section>
-
-  <section class="player-container">
-
-    <div id="message">
-      MelStream Auto is ready.
-      Waiting for an authorized playback source.
-    </div>
-
-    <iframe
-      id="player"
-      allow="autoplay; fullscreen; picture-in-picture"
-      allowfullscreen
-      referrerpolicy="strict-origin-when-cross-origin"
-      style="display:none">
-    </iframe>
-
-  </section>
-
-  <section class="sources">
-    <h3>Playback providers</h3>
-
-    <div class="source-list">
-
-      <div class="source disabled">
-        VidSrc — Integration pending
-      </div>
-
-      <div class="source disabled">
-        SmashyStream — Integration pending
-      </div>
-
-      <div class="source disabled">
-        VidFast — Integration pending
-      </div>
-
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  MelStream Auto · Independent streaming integration
-</footer>
-
 <script>
 "use strict";
 
 const params = new URLSearchParams(window.location.search);
 
-const type = params.get("type") || "movie";
+const type = params.get("type") || "";
 const id = params.get("id") || "";
 
 const title = document.getElementById("title");
@@ -215,41 +11,38 @@ const mediaType = document.getElementById("media-type");
 const mediaId = document.getElementById("media-id");
 const message = document.getElementById("message");
 
-function validateRequest() {
-
-  if (!["movie", "tv", "series"].includes(type)) {
-    message.textContent = "Unsupported media type.";
-    return false;
-  }
-
-  if (!/^tt\d+(:\d+:\d+)?$/.test(id)) {
-    message.textContent = "Invalid or missing IMDb identifier.";
-    return false;
-  }
-
-  return true;
-}
-
 function initialize() {
 
-  if (!validateRequest()) {
+  if (!id || id.includes("{")) {
+    message.textContent =
+      "No media ID received from MerlMovie.";
+    return;
+  }
+
+  if (!["movie", "tv", "series"].includes(type)) {
+    message.textContent =
+      "Unsupported media type: " + type;
+    return;
+  }
+
+  if (!/^[a-zA-Z0-9:_-]+$/.test(id)) {
+    message.textContent =
+      "Invalid media identifier.";
     return;
   }
 
   title.textContent = "MelStream Auto";
 
   mediaType.textContent =
-    type === "movie" ? "Movie playback request" :
-    "TV series playback request";
+    type === "movie"
+      ? "Movie playback request"
+      : "TV series playback request";
 
-  mediaId.textContent = "IMDb ID: " + id;
+  mediaId.textContent = "Media ID: " + id;
 
   message.textContent =
-    "Media identified successfully. Waiting for an authorized video source.";
+    "Media identified successfully. Waiting for playback source.";
 }
 
 initialize();
 </script>
-
-</body>
-</html>
