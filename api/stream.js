@@ -4,17 +4,14 @@ export default async function handler(req, res) {
 
   try {
     const { type } = req.query;
-    let rawId = req.query.id;
+    const parts = String(req.query.id || "").split(":");
+    const imdbId = parts[0];
+    const season = Number(parts[1]) || null;
+    const episode = Number(parts[2]) || null;
 
-    if (!["movie", "series"].includes(type) || !rawId) {
+    if (!["movie", "series"].includes(type) || !/^tt\d+$/.test(imdbId)) {
       return res.status(400).json({ streams: [] });
     }
-
-    // Extract series episode information.
-    const parts = rawId.split(":");
-    const imdbId = parts[0];
-    const season = parts[1] ? Number(parts[1]) : null;
-    const episode = parts[2] ? Number(parts[2]) : null;
 
     const metaResponse = await fetch(
       `https://cinemeta-live.strem.io/meta/${type}/${encodeURIComponent(imdbId)}.json`
@@ -27,19 +24,14 @@ export default async function handler(req, res) {
     const metaData = await metaResponse.json();
     let title = metaData.meta?.name;
 
-    if (!title) {
-      return res.status(200).json({ streams: [] });
-    }
+    if (!title) return res.status(200).json({ streams: [] });
 
-    // Find the exact episode title for series.
     if (type === "series") {
       if (!season || !episode) {
         return res.status(200).json({ streams: [] });
       }
 
-      const videos = metaData.meta?.videos || [];
-
-      const selectedEpisode = videos.find(video =>
+      const selectedEpisode = (metaData.meta?.videos || []).find(video =>
         Number(video.season) === season &&
         Number(video.episode) === episode
       );
@@ -51,37 +43,46 @@ export default async function handler(req, res) {
       title = selectedEpisode.title;
     }
 
-    // Search Internet Archive.
-    const searchURL = new URL(
-      "https://archive.org/advancedsearch.php"
-    );
+    const normalize = value =>
+      String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
 
     const cleanTitle = title.replace(/["\\]/g, "");
+
+    const searchURL = new URL("https://archive.org/advancedsearch.php");
 
     searchURL.searchParams.set(
       "q",
       `mediatype:movies AND title:"${cleanTitle}"`
     );
 
-    searchURL.searchParams.append("fl[]", "identifier");
-    searchURL.searchParams.append("fl[]", "title");
-    searchURL.searchParams.set("rows", "20");
+    ["identifier", "title"].forEach(field =>
+      searchURL.searchParams.append("fl[]", field)
+    );
+
+    searchURL.searchParams.set("rows", "30");
     searchURL.searchParams.set("output", "json");
 
     const searchResponse = await fetch(searchURL);
-
-    if (!searchResponse.ok) {
-      return res.status(200).json({ streams: [] });
-    }
+    if (!searchResponse.ok) return res.status(200).json({ streams: [] });
 
     const searchData = await searchResponse.json();
     const results = searchData.response?.docs || [];
 
+    const target = normalize(title);
     const streams = [];
 
-    // Check multiple matching records.
     for (const item of results) {
-      if (streams.length >= 3) break;
+      if (streams.length >= 5) break;
+
+      const resultTitle = normalize(item.title);
+
+      // Reject weak title matches.
+      if (!resultTitle.includes(target) && !target.includes(resultTitle)) {
+        continue;
+      }
 
       const metadataResponse = await fetch(
         `https://archive.org/metadata/${encodeURIComponent(item.identifier)}`
@@ -92,12 +93,9 @@ export default async function handler(req, res) {
       const metadata = await metadataResponse.json();
       const info = metadata.metadata || {};
 
-      // Only accept explicitly public-domain-marked material.
       const license = String(info.licenseurl || "").toLowerCase();
 
-      if (!license.includes("publicdomain/mark/1.0")) {
-        continue;
-      }
+      if (!license.includes("publicdomain/mark/1.0")) continue;
 
       const files = metadata.files || [];
 
@@ -112,16 +110,43 @@ export default async function handler(req, res) {
         );
       });
 
-      for (const video of videoFiles.slice(0, 1)) {
+      videoFiles.sort((a, b) => {
+        const quality = file => {
+          const text = `${file.name} ${file.format}`.toLowerCase();
+          if (/1080|1920/.test(text)) return 3;
+          if (/720|1280/.test(text)) return 2;
+          if (/480|640/.test(text)) return 1;
+          return 0;
+        };
+
+        return quality(b) - quality(a);
+      });
+
+      for (const video of videoFiles.slice(0, 2)) {
+        const encodedPath = video.name
+          .split("/")
+          .map(encodeURIComponent)
+          .join("/");
+
         streams.push({
           name: "MelStream Auto",
-          title: `${item.title} - Internet Archive`,
-          url: `https://archive.org/download/${encodeURIComponent(item.identifier)}/${video.name.split("/").map(encodeURIComponent).join("/")}`
+          title: `${item.title} - ${qualityLabel(video)}`,
+          url: `https://archive.org/download/${encodeURIComponent(item.identifier)}/${encodedPath}`
         });
+
+        if (streams.length >= 5) break;
       }
     }
 
     return res.status(200).json({ streams });
+
+    function qualityLabel(file) {
+      const text = `${file.name} ${file.format}`.toLowerCase();
+      if (/1080|1920/.test(text)) return "1080p";
+      if (/720|1280/.test(text)) return "720p";
+      if (/480|640/.test(text)) return "480p";
+      return "Quality unspecified";
+    }
 
   } catch (error) {
     return res.status(200).json({
