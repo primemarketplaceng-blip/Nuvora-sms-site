@@ -1,12 +1,10 @@
 {
   "id": "com.melstream.auto",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "MelStream Auto",
-  "description": "MelStream movie and TV streaming add-on",
+  "description": "MelStream movie and TV series add-on",
   "resources": [
-    "catalog",
-    "stream",
-    "meta"
+    "stream"
   ],
   "types": [
     "movie",
