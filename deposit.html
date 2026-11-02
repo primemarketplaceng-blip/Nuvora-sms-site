@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Deposit | Nuvora SMS</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap">
+<a class="brand" href="index.html"><img src="logo-mark.svg" alt="" width="34" height="34">Nuvora <span>SMS</span></a>
+<nav><span id="who" class="meta" style="font-size:14px"></span><button id="signout" class="linkbtn" type="button">Sign out</button></nav>
+</div></header>
+<main id="main"><div class="wrap doc">
+<p class="eyebrow">Wallet</p>
+<h1>Deposit</h1>
+<p class="meta" style="margin:0">Wallet balance</p>
+<p id="balance" class="balance">...</p>
+<form id="deposit-form" class="form" novalidate>
+<label for="amount">Amount in naira</label>
+<input id="amount" name="amount" type="number" inputmode="numeric" step="1" min="500" required>
+<div class="presets" aria-label="Quick amounts">
+<button type="button" data-amt="1000">1,000</button><button type="button" data-amt="2000">2,000</button><button type="button" data-amt="5000">5,000</button><button type="button" data-amt="10000">10,000</button>
+</div>
+<button class="btn" type="submit">Pay with Paystack</button>
+<p id="msg" class="msg" role="status" aria-live="polite"></p>
+</form>
+<h2>Deposit history</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Date (UTC)</th><th>Amount</th><th>Status</th></tr></thead>
+<tbody id="history"><tr><td colspan="3">Loading...</td></tr></tbody>
+</table></div>
+<p class="meta" style="margin-top:20px">Payments are processed by Paystack. We never see or store your card details.</p>
+</div></main>
+<footer><div class="wrap">
+<div>&copy; <span id="year">2026</span> Nuvora Tech. Nuvora SMS is a service of Nuvora Tech.</div>
+<div><a href="privacy.html">Privacy Policy</a> &nbsp; <a href="terms.html">Terms of Service</a></div>
+</div></footer>
+<script src="main.js"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="deposit.js"></script>
+</body>
+</html>
