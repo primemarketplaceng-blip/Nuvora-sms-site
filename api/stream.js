@@ -3,15 +3,21 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   try {
-    const { type, id } = req.query;
+    const { type } = req.query;
+    let rawId = req.query.id;
 
-    if (!["movie", "series"].includes(type) || !id) {
+    if (!["movie", "series"].includes(type) || !rawId) {
       return res.status(400).json({ streams: [] });
     }
 
-    // Get the movie or series title from Cinemeta.
+    // Extract series episode information.
+    const parts = rawId.split(":");
+    const imdbId = parts[0];
+    const season = parts[1] ? Number(parts[1]) : null;
+    const episode = parts[2] ? Number(parts[2]) : null;
+
     const metaResponse = await fetch(
-      `https://cinemeta-live.strem.io/meta/${type}/${encodeURIComponent(id)}.json`
+      `https://cinemeta-live.strem.io/meta/${type}/${encodeURIComponent(imdbId)}.json`
     );
 
     if (!metaResponse.ok) {
@@ -19,28 +25,47 @@ export default async function handler(req, res) {
     }
 
     const metaData = await metaResponse.json();
-    const title = metaData.meta?.name;
+    let title = metaData.meta?.name;
 
     if (!title) {
       return res.status(200).json({ streams: [] });
     }
 
-    // Search Internet Archive for matching films.
+    // Find the exact episode title for series.
+    if (type === "series") {
+      if (!season || !episode) {
+        return res.status(200).json({ streams: [] });
+      }
+
+      const videos = metaData.meta?.videos || [];
+
+      const selectedEpisode = videos.find(video =>
+        Number(video.season) === season &&
+        Number(video.episode) === episode
+      );
+
+      if (!selectedEpisode?.title) {
+        return res.status(200).json({ streams: [] });
+      }
+
+      title = selectedEpisode.title;
+    }
+
+    // Search Internet Archive.
     const searchURL = new URL(
       "https://archive.org/advancedsearch.php"
     );
 
+    const cleanTitle = title.replace(/["\\]/g, "");
+
     searchURL.searchParams.set(
       "q",
-      `mediatype:movies AND title:"${title.replace(/["\\]/g, "")}"`
+      `mediatype:movies AND title:"${cleanTitle}"`
     );
 
-    searchURL.searchParams.set(
-      "fl[]",
-      "identifier,title"
-    );
-
-    searchURL.searchParams.set("rows", "10");
+    searchURL.searchParams.append("fl[]", "identifier");
+    searchURL.searchParams.append("fl[]", "title");
+    searchURL.searchParams.set("rows", "20");
     searchURL.searchParams.set("output", "json");
 
     const searchResponse = await fetch(searchURL);
@@ -54,7 +79,10 @@ export default async function handler(req, res) {
 
     const streams = [];
 
+    // Check multiple matching records.
     for (const item of results) {
+      if (streams.length >= 3) break;
+
       const metadataResponse = await fetch(
         `https://archive.org/metadata/${encodeURIComponent(item.identifier)}`
       );
@@ -64,7 +92,7 @@ export default async function handler(req, res) {
       const metadata = await metadataResponse.json();
       const info = metadata.metadata || {};
 
-      // Only accept items explicitly marked as public domain.
+      // Only accept explicitly public-domain-marked material.
       const license = String(info.licenseurl || "").toLowerCase();
 
       if (!license.includes("publicdomain/mark/1.0")) {
@@ -73,7 +101,7 @@ export default async function handler(req, res) {
 
       const files = metadata.files || [];
 
-      const video = files.find(file => {
+      const videoFiles = files.filter(file => {
         const name = String(file.name || "").toLowerCase();
         const format = String(file.format || "").toLowerCase();
 
@@ -84,15 +112,13 @@ export default async function handler(req, res) {
         );
       });
 
-      if (!video) continue;
-
-      streams.push({
-        name: "MelStream Auto",
-        title: item.title,
-        url: `https://archive.org/download/${encodeURIComponent(item.identifier)}/${encodeURIComponent(video.name)}`
-      });
-
-      break;
+      for (const video of videoFiles.slice(0, 1)) {
+        streams.push({
+          name: "MelStream Auto",
+          title: `${item.title} - Internet Archive`,
+          url: `https://archive.org/download/${encodeURIComponent(item.identifier)}/${video.name.split("/").map(encodeURIComponent).join("/")}`
+        });
+      }
     }
 
     return res.status(200).json({ streams });
@@ -100,7 +126,7 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(200).json({
       streams: [],
-      message: "Provider search failed."
+      message: "MelStream provider search failed."
     });
   }
 }
