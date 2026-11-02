@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MelStream Auto</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 30px 20px;
+      background: #101116;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+    }
+    h1 { color: #66e3ff; }
+    p { color: #c5c7d0; line-height: 1.6; }
+    button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin: 14px 0;
+      border: 0;
+      border-radius: 10px;
+      background: #242631;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:active { background: #35465c; }
+    #status { margin-top: 25px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MelStream Auto</h1>
+    <p>Choose a streaming provider to continue.</p>
+    <button onclick="openSource('vidsrc')">VidSrc</button>
+    <button onclick="openSource('smashy')">SmashyStream</button>
+    <button onclick="openSource('vidfast')">VidFast</button>
+    <p id="status">Ready</p>
+  </div>
+  <script>
+    function openSource(source) {
+      const status = document.getElementById('status');
+      const urls = {
+        vidsrc: 'https://vidsrc.sh/',
+        smashy: 'https://smashystream.xyz/',
+        vidfast: 'https://vidfast.vc/'
+      };
+      status.textContent = 'Opening ' + source + '...';
+      window.location.href = urls[source];
+    }
+  </script>
+</body>
+</html>
