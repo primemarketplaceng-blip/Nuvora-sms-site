@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Buy a number | Nuvora SMS</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap">
+<a class="brand" href="index.html"><img src="logo-mark.svg" alt="" width="34" height="34">Nuvora <span>SMS</span></a>
+<nav><a href="deposit.html">Deposit</a><span id="who" class="meta" style="font-size:14px"></span><button id="signout" class="linkbtn" type="button">Sign out</button></nav>
+</div></header>
+<main id="main"><div class="wrap doc">
+<p class="eyebrow">Numbers</p>
+<h1>Buy a number</h1>
+<p class="meta" style="margin:0">Wallet balance</p>
+<p id="balance" class="balance">...</p>
+<form id="buy-form" class="form" novalidate>
+<label for="country">Country</label>
+<select id="country"><option value="">Choose a country</option></select>
+<label for="service">Service</label>
+<input id="service" list="service-list" autocomplete="off" placeholder="Start typing a service name">
+<datalist id="service-list"></datalist>
+<p id="price" class="pricebox" aria-live="polite"></p>
+<button id="buy" class="btn" type="submit" disabled>Buy number</button>
+<p id="msg" class="msg" role="status" aria-live="polite"></p>
+</form>
+<div id="order-panel"></div>
+<h2>Your orders</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Date (UTC)</th><th>Number</th><th>Price</th><th>Status</th></tr></thead>
+<tbody id="history"><tr><td colspan="4">Loading...</td></tr></tbody>
+</table></div>
+<p class="meta" style="margin-top:20px">If no SMS arrives before the timer ends, your order is cancelled and your wallet is refunded.</p>
+</div></main>
+<footer><div class="wrap">
+<div>&copy; <span id="year">2026</span> Nuvora Tech. Nuvora SMS is a service of Nuvora Tech.</div>
+<div><a href="privacy.html">Privacy Policy</a> &nbsp; <a href="terms.html">Terms of Service</a></div>
+</div></footer>
+<script src="main.js"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="numbers.js"></script>
+</body>
+</html>
