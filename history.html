@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>History | Nuvora SMS</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap">
+<a class="brand" href="index.html"><img src="logo-mark.svg" alt="" width="34" height="34">Nuvora <span>SMS</span></a>
+<nav id="nav" aria-label="Main"><a href="login.html">Sign in</a></nav>
+</div></header>
+<main id="main"><div class="wrap doc">
+<p class="eyebrow">Account</p>
+<h1>History</h1>
+<p class="meta" style="margin:0">Wallet balance</p>
+<p id="balance" class="balance">...</p>
+<p><a class="btn" href="numbers.html">Buy number</a> &nbsp; <a class="btn alt" href="deposit.html">Deposit</a></p>
+<h2>Number orders</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Date (UTC)</th><th>Number</th><th>Code</th><th>Price</th><th>Status</th></tr></thead>
+<tbody id="orders"><tr><td colspan="5">Loading...</td></tr></tbody>
+</table></div>
+<h2>Deposits</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Date (UTC)</th><th>Amount</th><th>Status</th></tr></thead>
+<tbody id="deposits"><tr><td colspan="3">Loading...</td></tr></tbody>
+</table></div>
+<p id="msg" class="msg" role="status"></p>
+</div></main>
+<footer><div class="wrap">
+<div>&copy; <span id="year">2026</span> Nuvora Tech. Nuvora SMS is a service of Nuvora Tech.</div>
+<div><a href="privacy.html">Privacy Policy</a> &nbsp; <a href="terms.html">Terms of Service</a></div>
+</div></footer>
+<script src="main.js"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="history.js"></script>
+</body>
+</html>
