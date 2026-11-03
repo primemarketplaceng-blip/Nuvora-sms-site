@@ -1,0 +1,20 @@
+PORT=3000
+# Address of the website (no trailing slash). Used for CORS and the Paystack return page.
+FRONTEND_URL=https://primemarketplaceng.com
+# Long random string. Generate: node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+JWT_SECRET=
+# From Paystack dashboard, Settings, API Keys. Use sk_test_ first, sk_live_ only at launch.
+PAYSTACK_SECRET_KEY=
+# Gmail sending. GMAIL_APP_PASSWORD is a 16-character app password, not your normal password.
+GMAIL_USER=
+GMAIL_APP_PASSWORD=
+MAIL_FROM_NAME=Nuvora SMS
+MIN_DEPOSIT_NGN=500
+MAX_DEPOSIT_NGN=500000
+DB_PATH=./data/nuvora.db
+# SMSPool (number supplier). Put the real key only in Render, never in GitHub.
+SMSPOOL_API_KEY=
+# How many naira equal 1 US dollar. SMSPool prices are in US dollars. Update this when the rate moves.
+USD_NGN_RATE=
+# Your profit on top of the supplier price, in percent.
+MARKUP_PERCENT=30
